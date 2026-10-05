@@ -1,156 +1,66 @@
-**Rubik Visual · 三阶魔方可视化层先法复原**
+**Rubik Visual · 三阶魔方可视化复原**
 
-作者：Fanfzy。项目使用 Python、Ursina 和 magiccube，实现三维魔方编辑、随机打乱和层先法动画复原。主要操作通过鼠标完成，自写 Python 代码按逻辑分区逐行注释。
+**功能描述**
 
-支持平台：Windows。推荐 Python 3.12 与独立 conda 环境。项目代码采用 [MIT 许可证](LICENSE)，第三方依赖遵循各自的许可。
+使用 Python、Ursina 和 magiccube 实现完整三阶魔方的三维显示与层先法复原。默认白底、黄顶、蓝前、绿后、左橙、右红，六个中心色块固定。
 
-**功能与配色**
+| 功能 | 操作与效果 |
+| --- | --- |
+| 观察魔方 | 按住鼠标右键拖动旋转视角，上下、左右拖动方向均为反转设置 |
+| 编辑魔方 | 点击“编辑魔方”，左键选择非中心色块，再在右侧选色；完成编辑时检查颜色与物理可复原性 |
+| 随机打乱 | 从复原状态执行 25 个合法随机动作，生成可复原状态并清除旧的解法 |
+| 自动复原 | 根据当前颜色计算层先法并播放动画，支持暂停、继续及 1 倍、5 倍、10 倍速度 |
+| 单步复原 | 每次点击转动一个面 90°；按住每秒执行一步，松开停止后续动作 |
 
-- 三阶魔方，固定白底、黄顶、蓝前、绿后、左橙、右红，六个中心色块不可编辑。
-- 按住鼠标右键拖动观察魔方，上下与左右拖动方向均为反转设置。
-- 编辑模式中，左键点击非中心色块，在右侧选择颜色。
-- 随机打乱从复原状态执行 25 个合法动作，生成可复原状态。
-- 自动复原按层先法推进，支持暂停、继续及 1 倍、5 倍、10 倍速度。
-- 单步按钮每次点击转动一个面 90°，按住每秒执行一步，松开停止后续动作。
-- 完成编辑时检查颜色数量、角块和棱块组合，以及物理可复原性。
+自动复原默认约每秒一步，5 倍约每秒五步，10 倍约每秒十步，显示流畅度受设备帧率影响。单步和长按始终保持一倍速度。切换速度或暂停时，正在转动的一步会完整结束。
 
-**运行条件**
+界面显示复原阶段、动作和进度。右键拖动只改变观察角度，不改变魔方状态；动画中暂时禁止编辑和打乱。Esc 取消当前色块选择，关闭窗口退出程序。
 
-目前支持 Windows，需要 conda、Python 3.12 和能够运行 OpenGL 的图形环境。主要依赖为 Ursina 8.3.0、magiccube 1.2.0，全部固定版本保存在 `requirements.txt`。
+**配置环境**
 
-默认使用电脑已有的 `C:\Windows\Fonts\simhei.ttf` 中文字体。项目不包含系统字体文件，也不自动安装字体。
+支持 Windows，使用独立 conda 环境与 Python 3.12，需要能够运行 OpenGL 的图形环境。主要依赖为 Ursina 8.3.0、magiccube 1.2.0，全部固定版本保存在 `requirements.txt`，环境创建配置为 `environment.yml`。
 
-**下载项目**
+默认读取电脑已有的 `C:\Windows\Fonts\simhei.ttf` 中文字体。项目不安装或分发系统字体；如需使用其他已有中文 `.ttf` 字体，可设置 `RUBIK_FONT` 为其完整路径。
 
-仓库地址：[Fanfzy/rubik-visual](https://github.com/Fanfzy/rubik-visual)。可以在 GitHub 点击 Code → Download ZIP 并解压，或在 CMD 中运行：
+在 Anaconda Prompt 或已经初始化 conda 的 CMD 中执行以下命令。示例项目路径为 `C:\Users\LENOVO\Desktop\python魔方`，环境路径为 `D:\conda_envs\rubik_visual`，其他使用者请替换为自己的实际位置。
+
+首次创建环境：
 
 ```bat
-rem 下载项目源码，不会安装依赖。
-git clone https://github.com/Fanfzy/rubik-visual.git
-rem 进入项目根目录，后续创建环境与启动命令都在这里运行。
-cd rubik-visual
+rem 进入包含 environment.yml 的项目根目录。
+cd /d "C:\Users\LENOVO\Desktop\python魔方"
+rem 创建专用环境，并在其中安装 requirements.txt 的依赖。
+conda env create --prefix D:\conda_envs\rubik_visual --file environment.yml
+rem 激活刚创建的环境。
+conda activate D:\conda_envs\rubik_visual
+rem 启动程序，-s 忽略用户级 Python 包。
+python -s main.py
 ```
 
-下载后的项目目录可以自行选择；下面的 `C:\Users\LENOVO\Desktop\python魔方` 是作者的现有位置，其他使用者请替换成自己的实际目录。
-
-**环境指南：已有环境直接启动**
-
-作者的项目目录为 `C:\Users\LENOVO\Desktop\python魔方`，专用环境为 `D:\conda_envs\rubik_visual`。如果该环境已经创建且依赖已安装，无需重复创建或安装，双击 `启动魔方.cmd` 即可。
-
-也可以在 Anaconda Prompt 或已经初始化 conda 的 CMD 中运行：
+已有环境且依赖已安装时，无需重复创建或安装：
 
 ```bat
-rem 进入项目目录，/d 同时切换盘符。
+rem 进入项目目录。
 cd /d "C:\Users\LENOVO\Desktop\python魔方"
 rem 激活已有专用环境。
 conda activate D:\conda_envs\rubik_visual
-rem 使用该环境启动图形界面，-s 忽略用户级 Python 包。
+rem 启动图形界面。
 python -s main.py
 ```
 
-**环境指南：首次创建环境**
+也可双击 `启动魔方.cmd`。它依次选择 `RUBIK_PYTHON` 显式指定的解释器、已激活的 conda 环境、默认路径 `D:\conda_envs\rubik_visual\python.exe`，不会自动安装依赖。环境位于其他位置时，可先激活该环境再从终端启动，或设置 `RUBIK_PYTHON` 为已有 `python.exe` 的完整路径。
 
-仅在环境尚不存在时，进入包含 `environment.yml` 的项目目录，再执行以下命令。其他使用者可把环境路径改为自己的位置。
+没有 D 盘时，可以把环境路径改成其他位置，也可以用 `conda env create --file environment.yml` 创建名为 `rubik_visual` 的环境，再执行 `conda activate rubik_visual`。环境激活时设置 `PYTHONNOUSERSITE=1`，隔离用户级 Python 包。
 
-```bat
-rem 用 conda 创建专用环境，并安装 requirements.txt 中的固定版本依赖。
-conda env create --prefix D:\conda_envs\rubik_visual --file environment.yml
-rem 激活新环境。
-conda activate D:\conda_envs\rubik_visual
-rem 查看实际使用的解释器，确认它位于刚创建的环境中。
-python -s -c "import sys; print(sys.executable)"
-rem 检查已安装依赖的版本关系。
-python -s -m pip check
-rem 启动程序。
-python -s main.py
-```
+**版权声明**
 
-`environment.yml` 使用 conda 安装 Python 和 pip，并在同一个环境内安装程序依赖。环境激活时设置 `PYTHONNOUSERSITE=1`，配合 `-s` 防止其他项目的用户级包影响运行。
+Copyright (c) 2026 Fanfzy。本项目自身编写的代码与配套说明采用 [MIT 许可证](LICENSE)，允许使用、复制、修改和分发，包括商业使用，需保留版权与许可声明。软件按现状提供，完整条件以 LICENSE 原文为准。
 
-没有 D 盘时，可以选择自己的完整路径，也可以执行 `conda env create --file environment.yml` 创建名为 `rubik_visual` 的环境，再用 `conda activate rubik_visual` 激活。
-
-**启动脚本怎样选择环境**
-
-`启动魔方.cmd` 的选择顺序为：显式设置的 `RUBIK_PYTHON` → 已激活的 conda 环境 → 默认路径 `D:\conda_envs\rubik_visual\python.exe`。它只使用已有环境，不自动安装依赖。
-
-环境放在其他位置时，可以从激活环境的终端调用启动脚本，也可以在 CMD 中指定解释器：
-
-```bat
-rem 指定已有环境的解释器，把示例路径替换为自己的实际路径。
-set "RUBIK_PYTHON=E:\my_envs\rubik_visual\python.exe"
-rem 启动界面。
-call 启动魔方.cmd
-```
-
-**界面使用方法**
-
-1. **编辑魔方**：进入编辑模式后选择色块并修改颜色，右键拖动查看背面和底面。点击“完成编辑”检查状态；输入错误时保留编辑模式并提示原因。中心上的黑色小点表示不可编辑。
-2. **随机打乱**：重新生成合法状态，同时清除之前的复原步骤，也可用来从错误涂色恢复到合法状态。
-3. **自动复原**：根据当前 54 个颜色计算解法并播放。暂停时当前动作先完整结束；继续时沿用同一份动作队列。
-4. **单步复原**：点击一次执行一个 90° 动作，按住连续执行。在任意位置松开都停止后续动作。自动模式暂停后也能接着单步操作。
-
-Esc 取消当前色块选择。动画中暂时禁止编辑和打乱，关闭窗口退出程序。
-
-| 自动速度 | 动画时间 | 动作间等待 | 相邻动作开始间隔 |
+| 第三方组件 | 用途 | 版权声明 | 原始许可 |
 | --- | --- | --- | --- |
-| 1 倍 | 0.30 秒 | 0.70 秒 | 1.00 秒 |
-| 5 倍 | 0.06 秒 | 0.14 秒 | 0.20 秒 |
-| 10 倍 | 0.03 秒 | 0.07 秒 | 0.10 秒 |
+| [Ursina](https://github.com/pokepetter/ursina) | 三维绘制、界面和鼠标输入 | Copyright (c) 2020 Petter Amland | [MIT](https://github.com/pokepetter/ursina/blob/master/LICENSE) |
+| [magiccube](https://github.com/trincaog/magiccube) | 魔方状态模型与初学者层先法 | Copyright (c) 2022 trincaog | [BSD-3-Clause](https://github.com/trincaog/magiccube/blob/main/LICENSE) |
 
-这是播放器的目标时间，显示流畅度受设备帧率影响。切换档位时，正在转动的一步保持原速度，后续自动动作使用新档位。单步点击和长按保持一倍速度。
+项目 LICENSE 适用于本项目自身内容，第三方组件仍遵循各自的许可。Fanfzy 的项目署名不表示拥有第三方组件或系统字体的版权，也不表示第三方作者为本项目背书。
 
-**复原方法与动作记号**
-
-程序使用初学者层先法：白色底面十字 → 白色底层角块 → 中间层棱块 → 黄色顶面十字 → 顶层棱块归位 → 顶层角块归位 → 顶层角块转向。它展示教学过程，不追求最少步数。
-
-`U、D、F、B、L、R` 分别表示初始参考朝向中的顶、底、前、后、左、右面。正对被转动的面判断顺时针：`R` 为右面顺时针 90°，`R'` 为逆时针 90°，`R2` 为 180°，播放时拆成两步。右键改变观察角度后，动作记号仍使用原来的参考系。
-
-求解依据当前色块状态，不依赖打乱记录。颜色数量正确也不一定合法，例如单独翻转一条棱、单独扭转一个角或只交换两条棱，都不能通过正常转动复原。
-
-**代码结构与阅读顺序**
-
-| 文件 | 作用 |
-| --- | --- |
-| `main.py` | 程序入口、中文字体和窗口配置 |
-| `rubik/model.py` | 魔方颜色状态、编辑和面转动 |
-| `rubik/validation.py` | 颜色与物理可复原性检查 |
-| `rubik/solver.py` | 层先法适配、阶段说明和动作转换 |
-| `rubik/playback.py` | 动作队列、动画计时、暂停和速度控制 |
-| `rubik/geometry.py` | 色块坐标和 90° 几何变换 |
-| `rubik/view.py` | 三维魔方实体、贴片与转动动画 |
-| `rubik/ui.py` | 按钮、鼠标操作和后台求解任务协调 |
-| `environment.yml` | conda 环境创建配置 |
-| `requirements.txt` | 完整固定版本依赖 |
-| `启动魔方.cmd` | Windows 双击启动入口 |
-| `README.md` | 安装、操作、代码结构和许可说明 |
-| `LICENSE` | 本项目的 MIT 授权原文 |
-
-建议依次阅读模型、合法性检查、求解器、播放器，再阅读几何、显示和界面。模块通过颜色字符串与动作列表连接；模型负责状态，求解器产出动作，播放器管理时间，显示层绘制画面，界面协调用户操作。
-
-**常见问题**
-
-- **找不到 Python**：激活正确的 conda 环境，或设置 `RUBIK_PYTHON` 指向已有解释器。
-- **找不到 ursina / magiccube**：先查看 `sys.executable` 确认环境，避免把依赖误装进 base。
-- **找不到中文字体**：设置 `RUBIK_FONT` 指向自己已有的中文 `.ttf` 字体，再启动程序。
-- **无法打开窗口**：检查显卡驱动、OpenGL 支持和当前桌面会话。
-- **启动脚本出现半截英文被当成命令**：`.cmd` 必须保持 ASCII 内容和 CRLF 换行。
-
-```bat
-rem 指定已有中文字体，把示例路径替换为实际文件路径。
-set "RUBIK_FONT=E:\fonts\ChineseFont.ttf"
-rem 在已激活的项目环境中启动程序。
-python -s main.py
-```
-
-**项目许可与第三方来源**
-
-本项目自身编写的代码及配套说明采用 [MIT 许可证](LICENSE)，版权署名为 `Copyright (c) 2026 Fanfzy`。允许使用、复制、修改和分发，包括商业使用；使用者需保留版权与许可声明。软件按现状提供，完整条件以 LICENSE 原文为准。
-
-| 第三方组件 | 在本项目中的用途 | 版权声明 | 原始许可 |
-| --- | --- | --- | --- |
-| [Ursina](https://github.com/pokepetter/ursina) | 三维绘制、界面控件和鼠标输入 | Copyright (c) 2020 Petter Amland | [MIT](https://github.com/pokepetter/ursina/blob/master/LICENSE) |
-| [magiccube](https://github.com/trincaog/magiccube) | 魔方状态模型及初学者层先法 | Copyright (c) 2022 trincaog | [BSD-3-Clause](https://github.com/trincaog/magiccube/blob/main/LICENSE) |
-
-项目 LICENSE 适用于本项目自身内容，第三方组件仍保留各自的版权和许可条件。项目署名 Fanfzy 不表示拥有 Ursina、magiccube 或系统字体的版权，也不表示第三方作者为本项目背书。
-
-依赖通过软件包安装获取，本仓库没有复制第三方安装包源码、修改其安装目录中的文件或分发系统字体。其他依赖的版权与许可声明以各自发行包为准。若另行打包分发第三方组件，需按其原始许可证保留相应声明。
+依赖通过软件包安装获取，本仓库不包含第三方安装包源码或系统字体。其他依赖的版权与许可声明以各自发行包为准；另行打包分发第三方组件时，需保留其许可证要求的声明。
