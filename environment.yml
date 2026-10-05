@@ -1,0 +1,14 @@
+# 使用通用名称；安装时用 --prefix 自行指定目录，避免绑定作者电脑。
+name: rubik_visual  # 可按名称激活，也可在创建时用 --prefix 指定 D 盘目录。
+# 使用现有 conda 默认软件源。
+channels:  # 保持使用已有的 conda 默认软件源。
+  - defaults  # Python 与 pip 从此源获取。
+# 激活这个环境时忽略用户级 Python 包。
+variables:  # conda 激活环境时设置这些变量。
+  PYTHONNOUSERSITE: '1'  # 屏蔽用户级 Python 包。
+# Python 和 pip 属于 conda 环境，其他包通过固定版本文件安装。
+dependencies:  # 先安装解释器，再在同一环境安装图形和魔方依赖。
+  - python=3.12.15  # 固定本地已验收的 Python 版本。
+  - pip  # 使用环境自身的 pip。
+  - pip:  # 此部分由 conda 在新环境内执行。
+      - -r requirements-lock.txt  # 从完整验收依赖清单安装。

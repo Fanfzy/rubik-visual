@@ -1,0 +1,27 @@
+# ---------- 工作流触发与最小读取权限 ----------
+name: Core tests  # 在 Actions 页面显示此名称。
+on:  # 上传、合并请求和手动操作都可以触发。
+  push:  # 每次上传都验收。
+  pull_request:  # 外部贡献也执行相同检查。
+  workflow_dispatch:  # 支持从网页手动运行。
+permissions:  # 工作流只需要读取仓库内容。
+  contents: read  # 不需要修改仓库的权限。
+
+# ---------- Windows 核心与启动器验收 ----------
+jobs:  # 这个项目先明确支持 Windows。
+  core:  # 单个任务即可覆盖首个支持平台。
+    runs-on: windows-latest  # 使用 GitHub 提供的 Windows 设备。
+    timeout-minutes: 15  # 异常运行不会无限等待。
+    steps:  # 先准备解释器，再安装依赖并检查。
+      - uses: actions/checkout@v6  # 获取提交对应的源码及换行规则。
+      - uses: actions/setup-python@v6  # 云端使用独立 Python，避免本机环境路径。
+        with:  # 指定与本地相同的 Python 次版本。
+          python-version: '3.12'  # 本地 conda 验收也是 Python 3.12。
+      - name: Install locked dependencies  # 此安装仅发生在 GitHub 临时设备。
+        run: python -s -m pip install -r requirements-lock.txt  # 使用完整锁定版本文件。
+      - name: Check dependencies  # 检查软件包声明的版本关系。
+        run: python -s -m pip check  # 不把依赖冲突留到运行时。
+      - name: Check source and documents  # 验证项目的学习资料与源码约定。
+        run: python -s tools/check_project.py  # 检查逐行注释、格式和相对链接。
+      - name: Run core and launcher tests  # 图形界面仍在本地完整验收。
+        run: python -s run_tests.py --core  # 默认包含 1000 个固定种子的随机打乱。

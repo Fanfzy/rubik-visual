@@ -1,0 +1,25 @@
+# 忽略 Python 自动生成的字节码。
+__pycache__/
+*.pyc
+*.pyo
+# 截图和测试报告由测试程序自动生成。
+test_outputs/
+# 环境、构建结果和开发工具缓存不属于源码。
+.venv/
+venv/
+env/
+.pytest_cache/
+.ruff_cache/
+build/
+dist/
+*.egg-info/
+# 个人编辑器设置和本地环境变量不提交。
+.vscode/
+.idea/
+.env
+.env.*
+# 系统临时文件不进入仓库。
+Thumbs.db
+Desktop.ini
+.DS_Store
+*.log

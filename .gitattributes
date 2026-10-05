@@ -1,0 +1,11 @@
+# Git 内部统一保存文本，检出时依据文件类型选择换行。
+* text=auto eol=lf
+# Python 与配置、说明使用 LF，减少跨机器产生的无关差异。
+*.py text eol=lf
+*.md text eol=lf
+*.yml text eol=lf
+*.txt text eol=lf
+# Windows cmd 必须使用 CRLF，避免解释器把注释截断成命令。
+*.cmd text eol=crlf
+# 图片保持原始二进制内容。
+*.png binary
