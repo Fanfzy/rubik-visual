@@ -1,6 +1,8 @@
-**三阶魔方可视化层先法复原**
+**Rubik Visual · 三阶魔方可视化层先法复原**
 
 作者：Fanfzy。项目使用 Python、Ursina 和 magiccube，实现三维魔方编辑、随机打乱和层先法动画复原。主要操作通过鼠标完成，自写 Python 代码按逻辑分区逐行注释。
+
+支持平台：Windows。推荐 Python 3.12 与独立 conda 环境。项目代码采用 [MIT 许可证](LICENSE)，第三方依赖遵循各自的许可。
 
 **功能与配色**
 
@@ -17,6 +19,19 @@
 目前支持 Windows，需要 conda、Python 3.12 和能够运行 OpenGL 的图形环境。主要依赖为 Ursina 8.3.0、magiccube 1.2.0，全部固定版本保存在 `requirements.txt`。
 
 默认使用电脑已有的 `C:\Windows\Fonts\simhei.ttf` 中文字体。项目不包含系统字体文件，也不自动安装字体。
+
+**下载项目**
+
+仓库地址：[Fanfzy/rubik-visual](https://github.com/Fanfzy/rubik-visual)。可以在 GitHub 点击 Code → Download ZIP 并解压，或在 CMD 中运行：
+
+```bat
+rem 下载项目源码，不会安装依赖。
+git clone https://github.com/Fanfzy/rubik-visual.git
+rem 进入项目根目录，后续创建环境与启动命令都在这里运行。
+cd rubik-visual
+```
+
+下载后的项目目录可以自行选择；下面的 `C:\Users\LENOVO\Desktop\python魔方` 是作者的现有位置，其他使用者请替换成自己的实际目录。
 
 **环境指南：已有环境直接启动**
 
@@ -107,6 +122,8 @@ Esc 取消当前色块选择。动画中暂时禁止编辑和打乱，关闭窗�
 | `environment.yml` | conda 环境创建配置 |
 | `requirements.txt` | 完整固定版本依赖 |
 | `启动魔方.cmd` | Windows 双击启动入口 |
+| `README.md` | 安装、操作、代码结构和许可说明 |
+| `LICENSE` | 本项目的 MIT 授权原文 |
 
 建议依次阅读模型、合法性检查、求解器、播放器，再阅读几何、显示和界面。模块通过颜色字符串与动作列表连接；模型负责状态，求解器产出动作，播放器管理时间，显示层绘制画面，界面协调用户操作。
 
@@ -125,6 +142,15 @@ rem 在已激活的项目环境中启动程序。
 python -s main.py
 ```
 
-**依赖来源**
+**项目许可与第三方来源**
 
-三维引擎为 [Ursina](https://github.com/pokepetter/ursina)，采用 MIT 许可；魔方模型与层先法为 [magiccube](https://github.com/trincaog/magiccube)，采用 BSD-3-Clause 许可。依赖通过软件包安装获取，本项目没有复制或修改其安装目录中的源码；它们的版权与许可声明仍以原软件包为准。
+本项目自身编写的代码及配套说明采用 [MIT 许可证](LICENSE)，版权署名为 `Copyright (c) 2026 Fanfzy`。允许使用、复制、修改和分发，包括商业使用；使用者需保留版权与许可声明。软件按现状提供，完整条件以 LICENSE 原文为准。
+
+| 第三方组件 | 在本项目中的用途 | 版权声明 | 原始许可 |
+| --- | --- | --- | --- |
+| [Ursina](https://github.com/pokepetter/ursina) | 三维绘制、界面控件和鼠标输入 | Copyright (c) 2020 Petter Amland | [MIT](https://github.com/pokepetter/ursina/blob/master/LICENSE) |
+| [magiccube](https://github.com/trincaog/magiccube) | 魔方状态模型及初学者层先法 | Copyright (c) 2022 trincaog | [BSD-3-Clause](https://github.com/trincaog/magiccube/blob/main/LICENSE) |
+
+项目 LICENSE 适用于本项目自身内容，第三方组件仍保留各自的版权和许可条件。项目署名 Fanfzy 不表示拥有 Ursina、magiccube 或系统字体的版权，也不表示第三方作者为本项目背书。
+
+依赖通过软件包安装获取，本仓库没有复制第三方安装包源码、修改其安装目录中的文件或分发系统字体。其他依赖的版权与许可声明以各自发行包为准。若另行打包分发第三方组件，需按其原始许可证保留相应声明。
