@@ -1,7 +1,7 @@
 # ---------- 三维显示依赖与视觉配色 ----------
 from ursina import Entity, Vec3, color  # 显示层只依赖引擎和状态约定。
 from ursina.shaders import unlit_shader  # 让六种颜色保持稳定，不受光照变暗影响。
-from rubik.geometry import facelet_geometry, TURN_AXES  # 与模型测试共用贴片位置和转动方向。
+from rubik.geometry import facelet_geometry, TURN_AXES  # 使用统一的贴片位置和转动方向约定。
 from rubik.model import CENTERS  # 区分固定中心与可以编辑的贴片。
 PALETTE = dict(W=color.rgb32(241, 244, 250), Y=color.rgb32(255, 210, 51), B=color.rgb32(42, 120, 236), G=color.rgb32(40, 182, 121), R=color.rgb32(230, 68, 83), O=color.rgb32(255, 143, 54))  # 使用易于区分的魔方六色。
 def render_position(position):  # 适配模型的右手坐标与引擎前向坐标。

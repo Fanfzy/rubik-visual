@@ -1,50 +1,58 @@
 @rem ---------- Console and project location ----------
 @echo off
-rem Keep environment variables local to this launcher.
+rem Keep launcher variables local.
 setlocal
-rem Enable readable Python output while keeping this file ASCII.
+rem Use readable UTF-8 console output while keeping this file ASCII.
 chcp 65001 >nul
-rem Preserve the original directory and use the project directory.
+rem Start from the project directory regardless of the caller's location.
 pushd "%~dp0"
 
-rem ---------- Locate the existing dedicated environment ----------
-rem Share environment selection with the test launcher.
-call "%~dp0scripts\find_python.cmd"
-rem Stop if the selected interpreter does not exist.
-if errorlevel 1 goto missing_environment
-rem Allow the existing desktop-window test to verify this launcher.
-if /i "%~1"=="--test-window" goto test_window
-rem Start the normal interface without user-level packages.
+rem ---------- Select an existing interpreter ----------
+rem A user-specified interpreter has the highest priority.
+if defined RUBIK_PYTHON goto explicit_python
+rem Prefer the conda environment the user activated.
+if defined CONDA_PREFIX goto active_conda
+rem Preserve the original double-click environment on this computer.
+set "rubik_selected_python=D:\conda_envs\rubik_visual\python.exe"
+rem Validate the selected interpreter before starting.
+goto launch
+
+rem ---------- Explicit interpreter ----------
+:explicit_python
+rem Use the supplied path without changing or installing anything.
+set "rubik_selected_python=%RUBIK_PYTHON%"
+rem Do not silently replace an invalid explicit choice.
+goto launch
+
+rem ---------- Activated conda environment ----------
+:active_conda
+rem Windows conda keeps python.exe at the environment root.
+set "rubik_selected_python=%CONDA_PREFIX%\python.exe"
+
+rem ---------- Start the complete interface ----------
+:launch
+rem Missing interpreters require the documented environment setup.
+if not exist "%rubik_selected_python%" goto missing_environment
+rem Ignore user-level packages and run the project entry point.
 "%rubik_selected_python%" -s main.py
-rem Continue to the shared result handling after the interface closes.
-goto finished
-
-rem ---------- Desktop-window verification ----------
-rem This optional branch opens and closes the existing test window.
-:test_window
-rem Use the same environment and the real interface constructor.
-"%rubik_selected_python%" -s -m tests.window_smoke
-
-rem ---------- Preserve the Python result ----------
-rem Normal startup and verification share this result handler.
-:finished
-rem Save the exit code before pause or directory restoration changes it.
+rem Save the Python result before restoring the working directory.
 set "rubik_exit=%errorlevel%"
-rem Keep failures visible for inspection.
+rem Keep failures visible when the user double-clicks the launcher.
 if not "%rubik_exit%"=="0" pause
-rem Restore the original working directory.
+rem Restore the caller's directory.
 popd
-rem Return the original Python exit code.
+rem Preserve the original Python success or failure status.
 exit /b %rubik_exit%
 
 rem ---------- Missing environment feedback ----------
-rem Only an absent selected interpreter reaches this branch.
 :missing_environment
-rem Use ASCII feedback so script parsing never depends on encoding.
-echo See README.md for the conda environment setup.
-rem Keep the error visible.
+rem Explain the missing interpreter using encoding-independent text.
+echo Python interpreter not found: %rubik_selected_python%
+rem Point to the environment guide without installing dependencies.
+echo See README.md. Activate conda or set RUBIK_PYTHON to an existing python.exe.
+rem Keep the message visible.
 pause
-rem Restore the original working directory.
+rem Restore the caller's directory.
 popd
-rem Signal that startup failed without installing anything.
+rem Report failure explicitly.
 exit /b 1

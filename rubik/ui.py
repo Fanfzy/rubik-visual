@@ -49,21 +49,19 @@ class RubikUI(Entity):  # 作为引擎实体接收每帧更新和全局鼠标事
         for index, speed in enumerate((1, 5, 10)):  # 创建用户要求的三个档位。
             button = Button(parent=self, text=f'{speed}倍', position=(.52 + index * .08, -.088, -.02), scale=(.071, .035), color=ACCENT if speed == 1 else color.rgb32(44, 58, 78), text_color=INK, text_size=.62)  # 所选档位使用蓝色高亮，按钮明确位于背景前方。
             button.on_click = lambda selected=speed: self.select_auto_speed(selected)  # 将当前档位固定到对应按钮回调。
-            self.speed_buttons[speed] = button  # 保存真实按钮供状态更新和集成测试。
+            self.speed_buttons[speed] = button  # 保存按钮供当前速度的高亮状态更新。
         self.palette_root = Entity(parent=self, enabled=False, z=-.1)  # 颜色选择器覆盖说明卡，默认隐藏。
         Entity(parent=self.palette_root, model='quad', position=(.60, .055, .02), scale=(.30, .36), color=SURFACE)  # 将背景放到颜色按钮后方，避免共面绘制遮挡。
         self.palette_title = label('请选择颜色', .48, .20, .66, INK, self.palette_root)  # 显示当前被点击色块的位置。
-        self.palette_buttons = {}  # 保留六个颜色按钮便于集成测试。
         for index, value in enumerate('WYBGRO'):  # 显示六种可选颜色。
             x = .545 + (index % 2) * .11  # 两列排列避免挤占三维区域。
             y = .11 - (index // 2) * .085  # 三行排列，留足鼠标点击面积。
             button = Button(parent=self.palette_root, text=COLOR_NAMES[value][0], position=(x, y, -.02), scale=(.09, .062), color=PALETTE[value], text_color=color.black if value in 'WYO' else color.white, text_size=.70)  # 六种色样明确位于面板前方，保证白黄按钮也可见。
             button.on_click = lambda chosen=value: self.paint(chosen)  # 默认参数固定当前颜色，避免循环闭包错误。
-            self.palette_buttons[value] = button  # 保存用于自动验收的真实控件。
         self.count_text = label('', 0, -.222, .60, MUTED, self, origin=(0, .5))  # 编辑时显示颜色数量，其余时候显示观察说明。
         self.notice_text = label('', 0, -.269, .78, INK, self, origin=(0, .5))  # 操作结果与错误提示放在中央下方。
         specifications = [('编辑魔方', self.toggle_edit, -.495), ('随机打乱', self.scramble, -.165), ('自动复原', self.toggle_auto, .165), ('单步复原', self.step_pressed, .495)]  # 四个主按钮保持明确固定的位置。
-        self.buttons = []  # 保留按钮列表用于动态更新和测试。
+        self.buttons = []  # 保留主按钮列表用于动态更新文字与可用状态。
         for title, callback, x in specifications:  # 创建四个同尺寸主操作按钮。
             button = Button(parent=self, text=title, position=(x, -.375), scale=(.295, .074), color=ACCENT if title == '自动复原' else SURFACE, text_color=INK, text_size=.84)  # 主操作加深强调，其他按钮保持统一。
             button.on_click = callback  # 将操作绑定到独立的界面方法。

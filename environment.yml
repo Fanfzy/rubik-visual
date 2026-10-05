@@ -11,4 +11,4 @@ dependencies:  # 先安装解释器，再在同一环境安装图形和魔方依
   - python=3.12.15  # 固定本地已验收的 Python 版本。
   - pip  # 使用环境自身的 pip。
   - pip:  # 此部分由 conda 在新环境内执行。
-      - -r requirements-lock.txt  # 从完整验收依赖清单安装。
+      - -r requirements.txt  # 从完整固定版本依赖清单安装。

@@ -1,6 +1,6 @@
 # ---------- 独立于界面的动作播放器 ----------
 class Playback:  # 控制动作顺序和时间，不依赖 Ursina。
-    def __init__(self, cube, view, duration=.3, interval=1.0):  # 接收模型与显示接口，便于替换和测试。
+    def __init__(self, cube, view, duration=.3, interval=1.0):  # 接收模型与显示接口，让计时规则独立于三维绘制。
         self.cube, self.view = cube, view  # 保存状态与动画接收者。
         self.duration, self.interval = duration, interval  # 设定动画时长和相邻动作开始的间隔。
         self.auto_speed, self._step_speed = 1, 1  # 默认自动速度为一倍，每个动作保存开始时的倍率。
@@ -19,7 +19,7 @@ class Playback:  # 控制动作顺序和时间，不依赖 Ursina。
     def set_plan(self, steps):  # 设置从当前状态计算出的完整复原步骤。
         self.invalidate()  # 新队列必须从空闲状态开始。
         self.steps = list(steps)  # 复制步骤，防止外部修改列表。
-    @property  # 提供界面与测试共同使用的完成标志。
+    @property  # 提供界面可以读取的完成标志。
     def complete(self):  # 判断步骤队列是否已经执行完。
         return self.index >= len(self.steps)  # 空队列同样表示没有待执行动作。
     def request_step(self):  # 只启动一个动作，连续点击不会叠加动画。
@@ -29,7 +29,7 @@ class Playback:  # 控制动作顺序和时间，不依赖 Ursina。
         self._step_speed = self.auto_speed if self.auto else 1  # 自动动作使用选择倍率，手动动作始终一倍。
         self.active, self.elapsed = True, 0.0  # 开始计时，但此时不修改模型。
         return True  # 一次单步请求只创建一次转动。
-    def tick(self, delta):  # 每帧推进动画，测试可以直接传入虚拟时间。
+    def tick(self, delta):  # 根据本帧经过的秒数推进动画和等待。
         remaining, epsilon = max(0.0, delta), 1e-10  # 保存本帧剩余真实时间，并容忍极小浮点误差。
         while True:  # 动画或等待在一帧内结束时，将剩余时间继续交给下一阶段。
             if self.active:  # 有正在进行的层转动时优先推进它。

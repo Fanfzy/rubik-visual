@@ -35,7 +35,7 @@ class CubeState:  # 封装库差异，其他模块只接触这个类。
         facelets = list(self.facelets)  # 复制当前状态，不直接修改第三方内部结构。
         facelets[index] = value  # 替换被点击色块的颜色。
         self.replace(''.join(facelets))  # 重建状态，保留其他贴片。
-    def move(self, notation):  # 执行标准单面动作，支持模型测试使用 180 度动作。
+    def move(self, notation):  # 执行标准单面动作，打乱时也支持 180 度动作。
         if notation not in [face + suffix for face in FACE_ORDER for suffix in ('', "'", '2')]:  # 禁止整块旋转和切片动作进入播放器。
             raise ValueError('只能使用 U、R、F、D、L、B 的单面转动。')  # 保持统一操作语义。
         self._cube.rotate(notation)  # 由 magiccube 执行确定性的贴片置换。
